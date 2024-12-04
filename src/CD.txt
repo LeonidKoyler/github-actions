@@ -4,4 +4,9 @@ Resourse group-folder where is files in cloud
 1) Create Subscription (leo-dev)
 2) Create resourse group (rg-leo-dev)
 3) Create app service(app-leonid-github-action-leonidko-dev)
-4)
+4) Manage indentety(create) name->id-leo-dev will be created clientId
+4.1) add it to azure federated credential(github action deploying Azure recourses )
+4.2) add it to github secrets(secrets and variables,actions->Repository secrets)
+4.3) TenetId,SubscriptionId located Settings->Azure Properties
+5) Give atorization app service->Access control(IAM)Add role asigment(+Add)
+ Website contributer

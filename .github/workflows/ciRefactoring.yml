@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+
+permissions:
+    id-token: write
+    contents: read
+
+jobs:
+  build:
+    name: CI    
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0
+
+       #dotnet test: This is the .NET CLI command to run unit tests in a .NET project.
+      - name: dotnet test  
+        run: dotnet test --configuration Release 
+      
+      - name: dotnet publish 
+
+        run: dotnet publish src/GitHubActionsDotNet.Api/GitHubActionsDotNet.Api.csproj --configuration Release -o artifacts
+
+           #download a Build Artifact
+
+       # Upload a Build Artifact
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dometrain-artifact
+          path: artifacts  #path/to/artifact 
+          
+  deploy_dev:
+    name: deploy dev    
+    needs: build     # run when build job finish
+    uses: ./.github/workflows/step-deploy.yml
+    with:
+        env: dev # pass dev to step-deploy
+    secrets: inherit  
+  
+  deploy_prod:
+    name: deploy prod    
+    needs: deploy_dev     # run when deploy_dev job finish
+    uses: ./.github/workflows/step-deploy.yml
+    with:
+        env: prod 
+    secrets: inherit  

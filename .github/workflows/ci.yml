@@ -3,7 +3,11 @@ name: CI
 on:
   push:
     branches: [ "main" ]
- 
+
+permissions:
+    id-token: write
+    contents: read
+
 jobs:
   build:
     name: CI    
@@ -32,5 +36,59 @@ jobs:
           name: dometrain-artifact
           path: artifacts  #path/to/artifact 
           
+  deploy_dev:
+    name: deploy dev    
+    runs-on: ubuntu-latest
+    needs: build     # run when build job finish
+    environment: dev
 
-       
+    #Azure WebApp  
+    # Deploy to Azure Web apps
+    steps:
+      # download artifacts to path artifacts
+      - uses: actions/download-artifact@v4
+        with:
+         name: dometrain-artifact
+         path: artifacts/  
+
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          # All the keys are random generated fpr the demo(don't try to hack :-) )
+          client-id: ${{ secrets.AZURE_CLIENT_ID }} 
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}   
+      
+      - name: 'Deploy to Azure App Service'
+        uses: azure/webapps-deploy@v2
+        with: 
+           app-name: app-leonid-github-action-leonidko-dev # Replace with your app name from azure(app service name)
+           package: artifacts/
+
+  
+  deploy_prod:
+            name: deploy Prod    
+            runs-on: ubuntu-latest
+            needs: deploy_dev     # run when deploy_dev job finish
+            environment: prod  
+
+            steps:
+              # download artifacts to path artifacts
+              - uses: actions/download-artifact@v4
+                with:
+                 name: dometrain-artifact
+                 path: artifacts/  
+        
+              - name: Azure login
+                uses: azure/login@v2
+                with:
+                  # All the keys are random generated fpr the demo(don't try to hack :-) )
+                  client-id: ${{ secrets.AZURE_CLIENT_ID }} 
+                  tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+                  subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}   
+              
+              - name: 'Deploy to Azure App Service'
+                uses: azure/webapps-deploy@v2
+                with: 
+                   app-name: app-leonid-github-action-leonidko-prod # Replace with your app name from azure(app service name)
+                   package: artifacts/
