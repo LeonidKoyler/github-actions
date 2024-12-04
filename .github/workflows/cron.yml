@@ -1,12 +1,12 @@
-name: Run every 1 hour
+name: Run every month
 
 on:
   schedule:
-    - cron: '* */1 * * *'  # https://crontab.guru/
+    - cron: '* * */1 * *'  # https://crontab.guru/
 
 jobs:
   cron:
-    name: Run every 1 hour    
+    name: Run every month    
     runs-on: ubuntu-latest
     steps:
       - name: Hello world
