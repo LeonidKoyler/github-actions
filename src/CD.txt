@@ -1,0 +1,7 @@
+Subscription-for team/enviromrnt(dev,product Subscription)
+Resourse group-folder where is files in cloud
+
+1) Create Subscription (leo-dev)
+2) Create resourse group (rg-leo-dev)
+3) Create app service(app-leonid-github-action-leonidko-dev)
+4)
